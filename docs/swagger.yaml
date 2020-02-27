@@ -1,5 +1,96 @@
+definitions:
+  controller.StateResponse:
+    properties:
+      actions:
+        example:
+        - Foo
+        - Bar
+        - Blah
+        items:
+          type: string
+        type: array
+      is_death:
+        example: false
+        type: boolean
+      is_over:
+        example: false
+        type: boolean
+      state:
+        example: strtState
+        type: string
+    type: object
+  httputil.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
 info:
   contact: {}
   license: {}
-paths: {}
+paths:
+  /adventure:
+    get:
+      consumes:
+      - application/json
+      description: Show next state after executing action
+      parameters:
+      - description: Current state
+        in: query
+        name: state
+        required: true
+        type: string
+      - description: Action to execute
+        in: query
+        name: action
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.StateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Show next state after action
+  /adventure/first:
+    get:
+      consumes:
+      - application/json
+      description: Show first state of the adventure game
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.StateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Show first state
 swagger: "2.0"
