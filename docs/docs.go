@@ -122,7 +122,15 @@ var doc = `{
         "controller.StateResponse": {
             "type": "object",
             "properties": {
-                "actions": {
+                "is_death": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "is_over": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "new_actions": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -133,15 +141,7 @@ var doc = `{
                         "Blah"
                     ]
                 },
-                "is_death": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "is_over": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "state": {
+                "new_state": {
                     "type": "string",
                     "example": "strtState"
                 }

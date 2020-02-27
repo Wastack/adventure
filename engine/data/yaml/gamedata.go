@@ -37,6 +37,10 @@ func (e *GameStateEntry) Actions() map[engine.GameAction]string {
 	return result
 }
 
+func (e *GameStateEntry) Name() string {
+	return e.name
+}
+
 func (e *GameStateEntry) Story() engine.StoryContent {
 	return e.story
 }
@@ -48,4 +52,13 @@ type GameData struct {
 
 func (g *GameData) Start() engine.GameNodeI {
 	return g.start_node
+}
+
+func (g *GameData) GetNodeByString(name string) engine.GameNodeI {
+	for i := range g.entries {
+		if g.entries[i].name == name {
+			return &g.entries[i]
+		}
+	}
+	return nil
 }

@@ -13,8 +13,10 @@ type GameNodeI interface {
 	Next(GameAction) GameNodeI
 	Actions() map[GameAction]string
 	Story() StoryContent
+	Name() string
 }
 
 type GameDataI interface {
 	Start() GameNodeI
+	GetNodeByString(string) GameNodeI
 }

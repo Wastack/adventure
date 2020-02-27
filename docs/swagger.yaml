@@ -1,7 +1,13 @@
 definitions:
   controller.StateResponse:
     properties:
-      actions:
+      is_death:
+        example: false
+        type: boolean
+      is_over:
+        example: false
+        type: boolean
+      new_actions:
         example:
         - Foo
         - Bar
@@ -9,13 +15,7 @@ definitions:
         items:
           type: string
         type: array
-      is_death:
-        example: false
-        type: boolean
-      is_over:
-        example: false
-        type: boolean
-      state:
+      new_state:
         example: strtState
         type: string
     type: object

@@ -25,9 +25,7 @@ func NewController(engine.GameDataI) *Controller {
 // @Failure 500 {object} httputil.HTTPError
 // @Router /adventure/first [get]
 func (c *Controller) ShowFirstState(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, StateResponse{
-		Actions: []string{"Blah", "Foo", "Bar"},
-	})
+	ctx.JSON(http.StatusOK, gameDataToResponse(c.model.Start()))
 }
 
 // NextState godoc
