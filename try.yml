@@ -1,0 +1,17 @@
+---
+version: "0.0.1 (development)"
+start_node: kezdo_pont
+
+entries:
+   - name: kezdo_pont
+     story: "Ide jön egy zseniális kezdőtörténet"
+     actions:
+         - masodik_pont
+         - harmadik_pont
+   - name: masodik_pont
+     story: "A második pont zseniális története"
+     actions:
+         - kezdo_pont
+   - name: harmadik_pont
+     story: "A Harmadik pont szuper története, de sajnos meghaltál"
+     is_end: true
