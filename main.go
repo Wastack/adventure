@@ -62,12 +62,10 @@ func main() {
 		if !params.is_verbose {
 			gin.SetMode(gin.ReleaseMode)
 		}
-		// programatically set swagger info
+		// Set swagger info
 		docs.SwaggerInfo.Title = "Swagger Adventure API"
 		docs.SwaggerInfo.Description = "This is a server for the adventure game engine."
 		docs.SwaggerInfo.Version = "0.0"
-		docs.SwaggerInfo.Host = "localhost:" + params.port_number
-		docs.SwaggerInfo.BasePath = "/"
 		r := gin.New()
 
 		c := controller.NewController(game_data)
