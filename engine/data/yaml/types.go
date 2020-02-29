@@ -1,11 +1,16 @@
 package yaml
 
+type YamlGameAction struct {
+	Target string `yaml:"target"`
+	Text   string `yaml:"text"`
+}
+
 type YamlStateEntry struct {
-	Name    string   `yaml:"name"`
-	Story   string   `yaml:"story"`
-	Actions []string `yaml:"actions"`
-	Is_dead bool     `yaml:"is_dead"`
-	Is_end  bool     `yaml:"is_end"`
+	Name    string           `yaml:"name"`
+	Story   string           `yaml:"story"`
+	Actions []YamlGameAction `yaml:"actions"`
+	Is_dead bool             `yaml:"is_dead"`
+	Is_end  bool             `yaml:"is_end"`
 }
 
 type YamlDataSet struct {

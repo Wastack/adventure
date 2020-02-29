@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/Wastack/adventure/engine"
+	"github.com/Wastack/adventure/httputil"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -10,8 +13,10 @@ type Controller struct {
 	model engine.GameDataI
 }
 
-func NewController(engine.GameDataI) *Controller {
-	return &Controller{}
+func NewController(m engine.GameDataI) *Controller {
+	return &Controller{
+		model: m,
+	}
 }
 
 // ShowFirstState godoc
@@ -25,6 +30,10 @@ func NewController(engine.GameDataI) *Controller {
 // @Failure 500 {object} httputil.HTTPError
 // @Router /adventure/first [get]
 func (c *Controller) ShowFirstState(ctx *gin.Context) {
+	if c.model.Start() == nil {
+		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("No start point available"))
+		return
+	}
 	ctx.JSON(http.StatusOK, gameDataToResponse(c.model.Start()))
 }
 
@@ -41,7 +50,21 @@ func (c *Controller) ShowFirstState(ctx *gin.Context) {
 // @Failure 500 {object} httputil.HTTPError
 // @Router /adventure [get]
 func (c *Controller) NextState(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, StateResponse{
-		Actions: []string{"Blah", "Foo", "Bar"},
-	})
+	state_name := ctx.Query("state")
+	action_name := ctx.Query("action")
+
+	node := c.model.GetNodeByString(state_name)
+	if node == nil {
+		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("No state: %s", state_name))
+		return
+	}
+	new_node := node.Next(action_name)
+	if new_node == nil {
+		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("State has no action: %s", action_name))
+		return
+	}
+
+	log.Printf("DEBUG: http OK")
+
+	ctx.JSON(http.StatusOK, gameDataToResponse(new_node))
 }

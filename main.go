@@ -14,7 +14,7 @@ import (
 	"os"
 )
 
-func parse(file_path string) (engine.GameDataI, error) {
+func parse(file_path string, is_verbose bool) (engine.GameDataI, error) {
 	file, err := os.Open(file_path)
 	if err != nil {
 		return nil, err
@@ -23,40 +23,50 @@ func parse(file_path string) (engine.GameDataI, error) {
 	if err != nil {
 		return nil, err
 	}
-	return yaml.Parse_yaml(b)
+	return yaml.Parse_yaml(b, is_verbose)
 }
 
-func parse_clo() (with_api bool, port string, yaml_path string) {
+type CmdParams struct {
+	port_number string
+	with_api    bool
+	yaml_path   string
+	is_verbose  bool
+}
+
+func parse_clo() (params CmdParams) {
 	portPtr := flag.String("port", "8080", "API port")
 	withApiPtr := flag.Bool("with-api", true, "whether API should be served")
+	isVerbosePtr := flag.Bool("verbose", false, "Verbose output")
 	flag.Parse()
-	if portPtr != nil {
-		port = *portPtr
-	}
-	if withApiPtr != nil {
-		with_api = *withApiPtr
+	params = CmdParams{
+		port_number: *portPtr,
+		with_api:    *withApiPtr,
+		is_verbose:  *isVerbosePtr,
 	}
 	args := flag.Args()
 	if len(args) < 1 {
 		log.Fatalf("Missing yaml file path as first argument\n")
 	}
-	yaml_path = args[0]
+	params.yaml_path = args[0]
 	return
 }
 
 func main() {
-	with_api, port, file_path := parse_clo()
-	game_data, err := parse(file_path)
+	params := parse_clo()
+	game_data, err := parse(params.yaml_path, params.is_verbose)
 	if err != nil {
 		log.Fatalf("Error while parsing yaml file: %v", err)
 	}
 
-	if with_api {
+	if params.with_api {
+		if !params.is_verbose {
+			gin.SetMode(gin.ReleaseMode)
+		}
 		// programatically set swagger info
 		docs.SwaggerInfo.Title = "Swagger Adventure API"
 		docs.SwaggerInfo.Description = "This is a server for the adventure game engine."
 		docs.SwaggerInfo.Version = "0.0"
-		docs.SwaggerInfo.Host = "192.168.0.27:" + port
+		docs.SwaggerInfo.Host = "localhost:" + params.port_number
 		docs.SwaggerInfo.BasePath = "/"
 		r := gin.New()
 
@@ -71,6 +81,6 @@ func main() {
 
 		// use ginSwagger middleware to serve the API docs
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-		r.Run(":" + port)
+		r.Run(":" + params.port_number)
 	}
 }
