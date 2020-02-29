@@ -22,7 +22,7 @@ func getYamlFromFile(file_path string) []byte {
 
 func TestYamlEngine(t *testing.T) {
 	assert := assert.New(t)
-	data, err := yaml.Parse_yaml(getYamlFromFile("data/example.yml"))
+	data, err := yaml.Parse_yaml(getYamlFromFile("data/example.yml"), true)
 	assert.Nil(err)
 	assert.NotNil(data.Start())
 
