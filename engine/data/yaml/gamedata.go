@@ -20,6 +20,9 @@ type GameStateEntry struct {
 
 func (e *GameStateEntry) Next(id engine.ActionId) engine.GameNodeI {
 	if v, ok := e.actions[id]; ok {
+		if v.to == nil {
+			return nil
+		}
 		return v.to
 	}
 	return nil
