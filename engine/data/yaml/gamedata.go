@@ -64,6 +64,17 @@ func (g *GameData) Start() engine.GameNodeI {
 	return g.start_node
 }
 
+func (g *GameData) GetActionById(id engine.ActionId) *engine.GameActionInfo {
+	for _, e := range g.entries {
+		for k, aPtr := range e.actions {
+			if k == id {
+				return &aPtr.GameActionInfo
+			}
+		}
+	}
+	return nil
+}
+
 func (g *GameData) GetNodeByString(name string) engine.GameNodeI {
 	for i := range g.entries {
 		if g.entries[i].name == name {

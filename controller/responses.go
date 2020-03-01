@@ -5,6 +5,10 @@ import (
 	"log"
 )
 
+type SecretResponse struct {
+	SecretOk bool `json:"secret_ok" example:"true"`
+}
+
 type ActionResponse struct {
 	Id             string `json:"id" example:"324"`
 	Target         string `json:"target_state_id,omitempty" example:"state_xy"`

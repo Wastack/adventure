@@ -75,6 +75,7 @@ func main() {
 		{
 			adventure.GET("/first", c.ShowFirstState)
 			adventure.GET("", c.NextState)
+			adventure.GET("/secret", c.ResolveSecret)
 		}
 
 		// use ginSwagger middleware to serve the API docs

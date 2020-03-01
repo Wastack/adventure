@@ -24,4 +24,5 @@ type GameNodeI interface {
 type GameDataI interface {
 	Start() GameNodeI
 	GetNodeByString(string) GameNodeI
+	GetActionById(ActionId) *GameActionInfo
 }

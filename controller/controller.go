@@ -6,6 +6,7 @@ import (
 	"github.com/Wastack/adventure/httputil"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 type Controller struct {
@@ -64,4 +65,32 @@ func (c *Controller) NextState(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gameDataToResponse(new_node))
+}
+
+// ResolveSecret godoc
+// @Summary Check if secret Ok
+// @Description Decides whether a given secret resolves an action
+// @Accept  json
+// @Param secret query string true "Secret candidate"
+// @Param action query string true "Id of action to execute"
+// @Produce  json
+// @Success 200 {object} SecretResponse
+// @Failure 400 {object} httputil.HTTPError
+// @Failure 404 {object} httputil.HTTPError
+// @Failure 500 {object} httputil.HTTPError
+// @Router /adventure/secret [get]
+func (c *Controller) ResolveSecret(ctx *gin.Context) {
+	secret := ctx.Query("secret")
+	action_id := ctx.Query("action")
+	action_info := c.model.GetActionById(engine.ActionId(action_id))
+	if action_info == nil {
+		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("No such action id: %s", action_id))
+		return
+	}
+	if action_info.Secret == "" {
+		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("Action with id: %s has no secret", action_id))
+		return
+	}
+	is_secret_ok := strings.EqualFold(action_info.Secret, secret)
+	ctx.JSON(http.StatusOK, SecretResponse{SecretOk: is_secret_ok})
 }
