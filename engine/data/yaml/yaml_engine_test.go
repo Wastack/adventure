@@ -1,28 +1,14 @@
-package engine
+package yaml
 
 import (
-	"github.com/Wastack/adventure/engine/data/yaml"
+	"github.com/Wastack/adventure/utils"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"os"
 	"testing"
 )
 
-func getYamlFromFile(file_path string) []byte {
-	file, err := os.Open(file_path)
-	if err != nil {
-		panic("missing test file")
-	}
-	b, err := ioutil.ReadAll(file)
-	if err != nil {
-		panic("Error reading file")
-	}
-	return b
-}
-
 func TestYamlEngine(t *testing.T) {
 	assert := assert.New(t)
-	data, err := yaml.Parse_yaml(getYamlFromFile("data/example.yml"), true)
+	data, err := Parse_yaml(utils.GetYamlFromFile("testdata/example.yml"), true)
 	assert.Nil(err)
 	assert.NotNil(data.Start())
 
@@ -46,4 +32,8 @@ func TestYamlEngine(t *testing.T) {
 
 	// go back to first node
 	assert.Equal(node.Next("kezdo_pont").Name(), "kezdo_pont")
+
+	// assert that graph is connected
+	game_data := data.(*GameData)
+	assert.Empty(check_story_connected(game_data))
 }
