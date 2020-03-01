@@ -6,21 +6,25 @@ import (
 )
 
 type GameActionInfo struct {
-	to    *GameStateEntry
-	story string
+	to          *GameStateEntry
+	action_name string
+	story       string
+	action_id   string
 }
 
 type GameStateEntry struct {
-	actions map[string]*GameActionInfo
+	actions []*GameActionInfo
 	name    string
 	story   engine.StoryContent
 	is_dead bool
 	is_end  bool
 }
 
-func (e *GameStateEntry) Next(a string) engine.GameNodeI {
-	if actionInfo, ok := e.actions[a]; ok {
-		return actionInfo.to
+func (e *GameStateEntry) Next(id string) engine.GameNodeI {
+	for i := range e.actions {
+		if e.actions[i].action_id == id {
+			return e.actions[i].to
+		}
 	}
 	return nil
 }
@@ -33,14 +37,13 @@ func (e *GameStateEntry) IsGameOver() bool {
 	return e.is_end
 }
 
-func (e *GameStateEntry) Actions() map[string]engine.GameActionInfo {
+func (e *GameStateEntry) Actions() []engine.GameActionInfo {
 	if e.actions == nil {
 		log.Fatalf("Missing action map")
 	}
-	result := make(map[string]engine.GameActionInfo, len(e.actions))
-	i := 0
-	for k, v := range e.actions {
-		result[k] = engine.GameActionInfo{Story: v.story}
+	result := make([]engine.GameActionInfo, len(e.actions))
+	for i, a := range e.actions {
+		result[i] = engine.GameActionInfo{ActionId: a.action_id, ActionName: a.action_name, Story: a.story}
 		i += 1
 	}
 	return result
@@ -55,7 +58,7 @@ func (e *GameStateEntry) Story() engine.StoryContent {
 }
 
 type GameData struct {
-	entries    []GameStateEntry
+	entries    []*GameStateEntry
 	start_node *GameStateEntry
 }
 
@@ -66,7 +69,7 @@ func (g *GameData) Start() engine.GameNodeI {
 func (g *GameData) GetNodeByString(name string) engine.GameNodeI {
 	for i := range g.entries {
 		if g.entries[i].name == name {
-			return &g.entries[i]
+			return g.entries[i]
 		}
 	}
 	log.Printf("Node not found: %s", name)

@@ -7,12 +7,12 @@ entries:
      story: "Ide jön egy zseniális kezdőtörténet"
      actions:
          - target: masodik_pont
-           text: "Lépés a második pontra"
+           name: "Lépés a második pontra"
    - name: masodik_pont
      story: "A második pont zseniális története"
      actions:
          - target: kezdo_pont
-           text: "Visszalépés az első pontra"
+           name: "Visszalépés az első pontra"
    - name: harmadik_pont
      story: "A Harmadik pont szuper története, de sajnos meghaltál"
      is_end: true

@@ -3,7 +3,9 @@ package engine
 type GameAction int
 
 type GameActionInfo struct {
-	Story string
+	ActionName string
+	Story      string
+	ActionId   string
 }
 
 type StoryContent string
@@ -11,8 +13,8 @@ type StoryContent string
 type GameNodeI interface {
 	IsGameOver() bool
 	IsGameLost() bool
-	Next(string) GameNodeI              // action ID -> Node
-	Actions() map[string]GameActionInfo // action ID -> actioninfo
+	Next(string) GameNodeI // action ID -> Node
+	Actions() []GameActionInfo
 	Story() StoryContent
 	Name() string
 }

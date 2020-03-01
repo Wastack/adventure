@@ -6,8 +6,9 @@ import (
 )
 
 type ActionResponse struct {
-	State_id string `json:"state_id" example:"state_xy"`
-	Text     string `json:"text" example:"Move to state xy where a dragon awaits you"`
+	StateId    string `json:"state_id" example:"state_xy"`
+	Story      string `json:"story" example:"The dragon ate you for good"`
+	ActionName string `json:"name" example:"Move to state xy where a dragon awaits you"`
 }
 
 type StateResponse struct {
@@ -24,8 +25,8 @@ func gameDataToResponse(node engine.GameNodeI) StateResponse {
 	}
 	actions := make([]ActionResponse, len(node.Actions()))
 	i := 0
-	for k, v := range node.Actions() {
-		actions[i] = ActionResponse{State_id: k, Text: v.Story}
+	for _, v := range node.Actions() {
+		actions[i] = ActionResponse{StateId: v.ActionId, ActionName: v.ActionName, Story: v.Story}
 		i += 1
 	}
 	log.Printf("DEBUG: state in gameDataToResponse: %s", node)

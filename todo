@@ -1,5 +1,6 @@
-- ellenőrizni, hogy
-  + minden csomópont elérhető
-  + Az összes ID unique
 - dot formátum generálás (és abből esetleg png, vagy vmi hasonló)
 - Sztori megírása
+
+- new features:
+  + action with input prompt (~password)
+  + short action (action without redirection and with story)
