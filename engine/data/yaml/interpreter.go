@@ -57,7 +57,48 @@ func Parse_yaml(content []byte, is_verbose bool) (engine.GameDataI, error) {
 	if is_verbose {
 		log.Printf(log_data(&d))
 	}
+	// not connected entries
+	nce := check_story_connected(&d)
+	if len(nce) > 0 {
+		log.Printf("Warning: The following entries are not connected with start point: %v", nce)
+	}
 	return &d, nil
+}
+
+func check_story_connected(game_data *GameData) []string {
+	visited := make(map[string]struct{}, len(game_data.entries))
+	to_explore := make([]*GameStateEntry, 0, len(game_data.entries))
+	to_explore = append(to_explore, game_data.start_node)
+	for len(to_explore) > 0 {
+		current := to_explore[0]
+		//remove current
+		to_explore = to_explore[1:]
+		//check if current already visited
+		if _, ok := visited[current.name]; ok {
+			continue
+		}
+		// append new nodes
+		for _, v := range current.actions {
+			to_explore = append(to_explore, v.to)
+		}
+		// save node as visited
+		visited[current.name] = struct{}{}
+	}
+
+	// check equality of visited and original slices
+	diff := difference(game_data.entries, visited)
+	return diff
+}
+
+// difference returns the elements in `a` that aren't in `b`.
+func difference(a []GameStateEntry, b map[string]struct{}) []string {
+	var diff []string
+	for _, x := range a {
+		if _, found := b[x.name]; !found {
+			diff = append(diff, x.name)
+		}
+	}
+	return diff
 }
 
 func log_data(game_data *GameData) string {
