@@ -5,7 +5,6 @@ import (
 	"github.com/Wastack/adventure/engine"
 	"github.com/Wastack/adventure/httputil"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -63,8 +62,6 @@ func (c *Controller) NextState(ctx *gin.Context) {
 		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("State has no action: %s", action_name))
 		return
 	}
-
-	log.Printf("DEBUG: http OK")
 
 	ctx.JSON(http.StatusOK, gameDataToResponse(new_node))
 }
