@@ -5,16 +5,18 @@ type GameAction int
 type GameActionInfo struct {
 	ActionName string
 	Story      string
-	ActionId   string
+	Target     string
+	Secret     string
 }
 
 type StoryContent string
+type ActionId string
 
 type GameNodeI interface {
 	IsGameOver() bool
 	IsGameLost() bool
-	Next(string) GameNodeI // action ID -> Node
-	Actions() []GameActionInfo
+	Next(ActionId) GameNodeI // action ID -> Node
+	Actions() map[ActionId]GameActionInfo
 	Story() StoryContent
 	Name() string
 }

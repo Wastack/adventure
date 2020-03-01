@@ -1,9 +1,10 @@
 package yaml
 
 type YamlGameAction struct {
-	Target string `yaml:"target"`
-	Name   string `yaml:"name"`
-	Story  string `yaml:"story"`
+	Target      string `yaml:"target"`
+	Name        string `yaml:"name"`
+	Story       string `yaml:"story"`
+	PromptedFor string `yaml:"prompted"`
 }
 
 type YamlStateEntry struct {

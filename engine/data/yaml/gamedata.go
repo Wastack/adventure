@@ -5,26 +5,22 @@ import (
 	"log"
 )
 
-type GameActionInfo struct {
-	to          *GameStateEntry
-	action_name string
-	story       string
-	action_id   string
+type InnerActionInfo struct {
+	to *GameStateEntry
+	engine.GameActionInfo
 }
 
 type GameStateEntry struct {
-	actions []*GameActionInfo
+	actions map[engine.ActionId]*InnerActionInfo
 	name    string
 	story   engine.StoryContent
 	is_dead bool
 	is_end  bool
 }
 
-func (e *GameStateEntry) Next(id string) engine.GameNodeI {
-	for i := range e.actions {
-		if e.actions[i].action_id == id {
-			return e.actions[i].to
-		}
+func (e *GameStateEntry) Next(id engine.ActionId) engine.GameNodeI {
+	if v, ok := e.actions[id]; ok {
+		return v.to
 	}
 	return nil
 }
@@ -37,14 +33,13 @@ func (e *GameStateEntry) IsGameOver() bool {
 	return e.is_end
 }
 
-func (e *GameStateEntry) Actions() []engine.GameActionInfo {
+func (e *GameStateEntry) Actions() map[engine.ActionId]engine.GameActionInfo {
 	if e.actions == nil {
 		log.Fatalf("Missing action map")
 	}
-	result := make([]engine.GameActionInfo, len(e.actions))
-	for i, a := range e.actions {
-		result[i] = engine.GameActionInfo{ActionId: a.action_id, ActionName: a.action_name, Story: a.story}
-		i += 1
+	result := make(map[engine.ActionId]engine.GameActionInfo, len(e.actions))
+	for k, v := range e.actions {
+		result[k] = v.GameActionInfo
 	}
 	return result
 }

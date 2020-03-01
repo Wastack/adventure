@@ -6,6 +6,7 @@ import (
 	"github.com/Wastack/adventure/engine"
 	"gopkg.in/yaml.v2"
 	"log"
+	"strconv"
 )
 
 func Parse_yaml(content []byte, is_verbose bool) (engine.GameDataI, error) {
@@ -30,38 +31,47 @@ func Parse_yaml(content []byte, is_verbose bool) (engine.GameDataI, error) {
 		entries: make([]*GameStateEntry, len(y.Entries)),
 	}
 
-	for i := range y.Entries {
+	var curr_action_id = 0
+
+	for i, e := range y.Entries {
 		d.entries[i] = &GameStateEntry{
-			name:    y.Entries[i].Name,
-			story:   engine.StoryContent(y.Entries[i].Story),
-			is_end:  y.Entries[i].Is_end,
-			is_dead: y.Entries[i].Is_dead,
-			actions: make([]*GameActionInfo, len(y.Entries[i].Actions)),
+			name:    e.Name,
+			story:   engine.StoryContent(e.Story),
+			is_end:  e.Is_end,
+			is_dead: e.Is_dead,
+			actions: make(map[engine.ActionId]*InnerActionInfo, len(e.Actions)),
 		}
-		if y.Entries[i].Name == y.Start_node {
+		if e.Name == y.Start_node {
 			// assign start node
 			d.start_node = d.entries[i]
 		}
-		for j, a := range y.Entries[i].Actions {
-			d.entries[i].actions[j] = &GameActionInfo{action_id: a.Target, action_name: a.Name, story: a.Story}
+		for _, a := range e.Actions {
+			d.entries[i].actions[engine.ActionId(strconv.Itoa(curr_action_id))] = &InnerActionInfo{
+				GameActionInfo: engine.GameActionInfo{
+					Target:     a.Target,
+					ActionName: a.Name,
+					Story:      a.Story,
+					Secret:     a.PromptedFor},
+			}
+			curr_action_id += 1
 		}
 	}
 
 	// make pointers from actions by iterating over the structure again
 	for i := range d.entries {
-		for _, aPtr := range d.entries[i].actions {
-			if aPtr.action_id == "" {
+		for id, aPtr := range d.entries[i].actions {
+			if aPtr.Target == "" {
 				continue // the action has no target
 			}
 			found_action_to := false
-			for j := range d.entries {
-				if d.entries[j].name == aPtr.action_id {
+			for _, e := range d.entries {
+				if e.name == aPtr.Target {
 					found_action_to = true
-					aPtr.to = d.entries[j]
+					aPtr.to = e
 				}
 			}
 			if !found_action_to {
-				return nil, fmt.Errorf("Action with target '%s', name: '%s' does not correspond to any entries", aPtr.action_id, aPtr.action_name)
+				return nil, fmt.Errorf("Action with id '%s', target: '%s' does not correspond to any entries", id, aPtr.Target)
 			}
 		}
 	}
@@ -139,9 +149,10 @@ func log_data(game_data *GameData) string {
 	buffer.WriteString(fmt.Sprintf("Debugging game data!\n\tStart node: %s\n", game_data.start_node.name))
 	for i := range game_data.entries {
 		buffer.WriteString(fmt.Sprintf("\tentry name: %s\n", game_data.entries[i].name))
-		for _, v := range game_data.entries[i].actions {
+		for id, aPtr := range game_data.entries[i].actions {
 			buffer.WriteString(fmt.Sprintf(
-				"\t\taction target: %s, target ptr: %p, name: %s, story: %s\n", v.action_id, v.to, v.action_name, v.story))
+				"\t\taction id: %s, target: %s, target ptr: %p, name: %s, story: %s\n",
+				id, aPtr.Target, aPtr.to, aPtr.ActionName, aPtr.Story))
 		}
 	}
 	return buffer.String()

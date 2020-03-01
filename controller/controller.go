@@ -41,7 +41,7 @@ func (c *Controller) ShowFirstState(ctx *gin.Context) {
 // @Description Show next state after executing action
 // @Accept  json
 // @Param state query string true "Current state"
-// @Param action query string true "Action to execute"
+// @Param action query string true "Id of action to execute"
 // @Produce  json
 // @Success 200 {object} StateResponse
 // @Failure 400 {object} httputil.HTTPError
@@ -50,16 +50,16 @@ func (c *Controller) ShowFirstState(ctx *gin.Context) {
 // @Router /adventure [get]
 func (c *Controller) NextState(ctx *gin.Context) {
 	state_name := ctx.Query("state")
-	action_name := ctx.Query("action")
+	action_id := ctx.Query("action")
 
 	node := c.model.GetNodeByString(state_name)
 	if node == nil {
 		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("No state: %s", state_name))
 		return
 	}
-	new_node := node.Next(action_name)
+	new_node := node.Next(engine.ActionId(action_id))
 	if new_node == nil {
-		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("State has no action: %s", action_name))
+		httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("State has no action: %s", action_id))
 		return
 	}
 

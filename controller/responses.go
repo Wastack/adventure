@@ -6,7 +6,8 @@ import (
 )
 
 type ActionResponse struct {
-	StateId    string `json:"state_id,omitempty" example:"state_xy"`
+	Id         string `json:"id" example:"324"`
+	Target     string `json:"target_state_id,omitempty" example:"state_xy"`
 	Story      string `json:"story,omitempty" example:"The dragon ate you for good"`
 	ActionName string `json:"name" example:"Move to state xy where a dragon awaits you"`
 }
@@ -25,8 +26,8 @@ func gameDataToResponse(node engine.GameNodeI) StateResponse {
 	}
 	actions := make([]ActionResponse, len(node.Actions()))
 	i := 0
-	for _, v := range node.Actions() {
-		actions[i] = ActionResponse{StateId: v.ActionId, ActionName: v.ActionName, Story: v.Story}
+	for id, aPtr := range node.Actions() {
+		actions[i] = ActionResponse{Id: string(id), Target: aPtr.Target, Story: aPtr.Story, ActionName: aPtr.ActionName}
 		i += 1
 	}
 	return StateResponse{

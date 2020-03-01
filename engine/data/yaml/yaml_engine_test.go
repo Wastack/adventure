@@ -7,9 +7,9 @@ import (
 	"testing"
 )
 
-func findActionById(id string, node engine.GameNodeI) *engine.GameActionInfo {
+func findActionByTarget(target string, node engine.GameNodeI) *engine.GameActionInfo {
 	for _, v := range node.Actions() {
-		if v.ActionId == id {
+		if v.Target == target {
 			return &v
 		}
 	}
@@ -27,26 +27,38 @@ func TestYamlEngine(t *testing.T) {
 	assert.False(data.Start().IsGameLost())
 	assert.False(data.Start().IsGameOver())
 
-	mpont_action := findActionById("masodik_pont", data.Start())
-	hpont_action := findActionById("harmadik_pont", data.Start())
+	mpont_action := findActionByTarget("masodik_pont", data.Start())
+	hpont_action := findActionByTarget("harmadik_pont", data.Start())
 	assert.NotNil(mpont_action)
 	assert.NotNil(hpont_action)
-	assert.Equal("masodik_pont", mpont_action.ActionId)
-	assert.Equal("harmadik_pont", hpont_action.ActionId)
-	assert.Equal("Lépés a második pontra", findActionById("masodik_pont", data.Start()).ActionName)
+	assert.Equal("masodik_pont", mpont_action.Target)
+	assert.Equal("harmadik_pont", hpont_action.Target)
+	assert.Equal("Lépés a második pontra", findActionByTarget("masodik_pont", data.Start()).ActionName)
 
 	// masodik_pont
-	node := data.Start().Next("masodik_pont")
+	var node engine.GameNodeI
+	for k, v := range data.Start().Actions() {
+		if v.Target == "masodik_pont" {
+			node = data.Start().Next(k)
+			break
+		}
+	}
 	assert.Equal("masodik_pont", node.Name())
 	assert.False(data.Start().IsGameLost())
 	assert.False(data.Start().IsGameOver())
-	kpont_action := findActionById("kezdo_pont", node)
+	kpont_action := findActionByTarget("kezdo_pont", node)
 	assert.NotNil(kpont_action)
-	assert.Equal("kezdo_pont", kpont_action.ActionId)
-	assert.Equal("Visszalépés az első pontra", findActionById("kezdo_pont", node).ActionName)
+	assert.Equal("kezdo_pont", kpont_action.Target)
+	assert.Equal("Visszalépés az első pontra", findActionByTarget("kezdo_pont", node).ActionName)
 
 	// go back to first node
-	assert.Equal(node.Next("kezdo_pont").Name(), "kezdo_pont")
+	for k, v := range node.Actions() {
+		if v.Target == "kezdo_pont" {
+			node = node.Next(k)
+			break
+		}
+	}
+	assert.Equal(node.Name(), "kezdo_pont")
 
 	// assert that graph is connected
 	game_data := data.(*GameData)
