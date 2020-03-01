@@ -17,3 +17,17 @@ func TestYamlNotConnected(t *testing.T) {
 	assert.Equal(1, len(nce))
 	assert.Equal("harmadik_pont", nce[0])
 }
+
+func TestYamlNotUniqueEntry(t *testing.T) {
+	assert := assert.New(t)
+	data, err := Parse_yaml(utils.GetYamlFromFile("testdata/duplicated_entry.yml"), true)
+	assert.Nil(data)
+	assert.NotNil(err)
+}
+
+func TestYamlFalseActionId(t *testing.T) {
+	assert := assert.New(t)
+	data, err := Parse_yaml(utils.GetYamlFromFile("testdata/false_action_id.yml"), true)
+	assert.Nil(data)
+	assert.NotNil(err)
+}

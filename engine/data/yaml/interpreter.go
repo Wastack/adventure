@@ -26,6 +26,12 @@ func Parse_yaml(content []byte, is_verbose bool) (engine.GameDataI, error) {
 	}
 
 	for i := range y.Entries {
+		// check if name is unique:
+		for j := range d.entries {
+			if y.Entries[i].Name == d.entries[j].name {
+				return nil, fmt.Errorf("Duplicated entry name: %s", d.entries[j].name)
+			}
+		}
 		d.entries[i].name = y.Entries[i].Name
 		d.entries[i].story = engine.StoryContent(y.Entries[i].Story)
 		d.entries[i].is_end = y.Entries[i].Is_end
@@ -62,6 +68,7 @@ func Parse_yaml(content []byte, is_verbose bool) (engine.GameDataI, error) {
 	if len(nce) > 0 {
 		log.Printf("Warning: The following entries are not connected with start point: %v", nce)
 	}
+
 	return &d, nil
 }
 
