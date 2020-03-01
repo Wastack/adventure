@@ -17,6 +17,7 @@ entries:
            name: "Visszalépés az első pontra"
          - name: "Akció állapotváltás nélkül"
            story: "Sikerült végrehalytanod az akciót, örvendezhetsz. Ugyanabban az állapotban maradsz!"
+           secret: "titok1234"
    - name: harmadik_pont
      story: "A Harmadik pont szuper története, de sajnos meghaltál"
      is_end: true

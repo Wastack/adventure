@@ -51,7 +51,7 @@ func Parse_yaml(content []byte, is_verbose bool) (engine.GameDataI, error) {
 					Target:     a.Target,
 					ActionName: a.Name,
 					Story:      a.Story,
-					Secret:     a.PromptedFor},
+					Secret:     a.Secret},
 			}
 			curr_action_id += 1
 		}
@@ -151,8 +151,8 @@ func log_data(game_data *GameData) string {
 		buffer.WriteString(fmt.Sprintf("\tentry name: %s\n", game_data.entries[i].name))
 		for id, aPtr := range game_data.entries[i].actions {
 			buffer.WriteString(fmt.Sprintf(
-				"\t\taction id: %s, target: %s, target ptr: %p, name: %s, story: %s\n",
-				id, aPtr.Target, aPtr.to, aPtr.ActionName, aPtr.Story))
+				"\t\taction id: %s, target: %s, target ptr: %p, name: %s, story: %s, Secret: %s\n",
+				id, aPtr.Target, aPtr.to, aPtr.ActionName, aPtr.Story, aPtr.Secret))
 		}
 	}
 	return buffer.String()
